@@ -1,3 +1,8 @@
+/**
+* @author Justin Kim
+* @author Dorian Bansoodeb
+*/
+
 #include <iostream>
 #include <sys/wait.h> 
 #include <unistd.h>
@@ -123,3 +128,4 @@ int main() {
         return 0;
     }
 }
+
