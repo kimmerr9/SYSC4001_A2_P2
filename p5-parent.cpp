@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include "shared.hpp"
 
@@ -12,18 +14,18 @@
 #define SHM_MODE 0600 
 #endif
 
+#define SEM_MODE 0600
 
 int main() {
     // create shared memory segment
     int shmID = shmget(IPC_PRIVATE, sizeof(Shared5), SHM_MODE); //STA_MODE // SHM_MODE
     if (shmID < 0) {
-        std::cout << "error when creating semaphore using shmget()" << std::endl; 
-        return 1;
+        perror( "Error in shmget()");
     }
     // after the shared memory is created, it must be attached to an address space
-    void* addr = shmat(shmID, nullptr, 0);
-    if(addr == (void*)-1) {
-        std::cout << "error when creating address space shmat()" << std::endl;
+    void* addr = shmat(shmID, 0, 0);
+    if(addr == (int *)-1) {
+        perror( "Error in shmmat()");
     }
 
     Shared5* shm = static_cast<Shared5*>(addr);
@@ -31,10 +33,9 @@ int main() {
     shm->counter  = -1; // wait for child to attach
 
     // create set of semaphores
-    int semID = semget(IPC_PRIVATE, 1, SHM_MODE); //STA_MODE // SHM_MODE
+    int semID = semget(IPC_PRIVATE, 1, SEM_MODE); //STA_MODE // SHM_MODE
     if (semID < 0) {
-        std::cout << "error when creating semaphore using shmget()" << std::endl; 
-        return 1;
+        perror("Error in semget()");
     }
     union semun arg;
     arg.val = 1;
@@ -65,31 +66,32 @@ int main() {
         // parent Process
         std::cout << "parent process pid: " << pid << std::endl;
 
-        // BARRIER wait until child flips counter to -
+        // barrier - wait until child flips counter >= 0
         while(1) {
             if (semop(semID, &P, 1) < 0) { 
-                perror("semop P"); 
+                perror("Error semop P"); 
                 break; 
             }
             bool ready = (shm->counter >= 0);
             if (semop(semID, &V, 1) < 0) { 
-                perror("semop V"); break; 
+                perror("Error semop V"); 
+                break; 
             }
             if (ready) {
                 break;
             }
         }
-        // main loop
+    
         while(1) {
             int lock_count, lock_m;
             if (semop(semID, &P, 1) < 0) { 
-                perror("semop P"); 
+                perror("Error semop P"); 
                 break; 
             }
             lock_count = (shm->counter)++;      
-            lock_m     = shm->multiple;        
+            lock_m = shm->multiple;        
             if (semop(semID, &V, 1) < 0) { 
-                perror("semop V"); 
+                perror("Error semop V"); 
                 break; 
             }
 
@@ -111,8 +113,12 @@ int main() {
             std::cout << "child process terminated with a error" << std::endl;
             return 1;
         }
-        if (shmctl(shmID, IPC_RMID, nullptr) < 0) perror("shmctl IPC_RMID");
-        if (semctl(semID, 0, IPC_RMID) < 0) perror("semctl IPC_RMID");
+        if (shmctl(shmID, IPC_RMID, NULL) < 0) {
+            perror("cant IPC_RMID shared");
+        }
+        if (semctl(semID, 0, IPC_RMID) < 0) {
+            perror("semctl IPC_RMID");
+        }
         std::cout << "[Process1] - Terminated" << std::endl;
         return 0;
     }
