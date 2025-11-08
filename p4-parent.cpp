@@ -4,6 +4,8 @@
 #include <sys/ipc.h>
 #include <sys/types.h>
 #include <sys/shm.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include "shared.hpp"
 
@@ -16,13 +18,12 @@ int main() {
     // create shared memory segment
     int shmID = shmget(IPC_PRIVATE, sizeof(Shared4), SHM_MODE); 
     if (shmID < 0) {
-        std::cout << "error when creating semaphore using shmget()" << std::endl; 
-        return 1;
+        perror("Error in shmget()");
     }
     // after the shared memory is created, it must be attached to an address space
     void* addr = shmat(shmID, nullptr, 0);
     if(addr == (void*)-1) {
-        std::cout << "error when creating address space shmat()" << std::endl;
+       perror("Error in shmmat()");
     }
 
     Shared4* shm = static_cast<Shared4*>(addr);
@@ -58,7 +59,7 @@ int main() {
                 std::cout << "[Process1] counter= " << count << " - which is > 500. Terminating" << std::endl;
                 break;
             }
-            sleep(0.1);
+            sleep(0.1); 
         }
         
         // wait return's a child process pid; if return's < 0 then error in child process. wait() waits for 0
