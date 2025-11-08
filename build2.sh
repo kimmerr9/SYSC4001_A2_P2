@@ -1,3 +1,6 @@
+# @author Justin Kim
+# @author Dorian Bansoodeb
+
 if [ ! -d "bin" ]; then
     mkdir bin
 else
