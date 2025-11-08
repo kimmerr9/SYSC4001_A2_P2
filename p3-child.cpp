@@ -1,3 +1,8 @@
+/**
+* @author Justin Kim
+* @author Dorian Bansoodeb
+*/
+
 #include <iostream>
 #include <unistd.h>
 
@@ -19,3 +24,4 @@ int main(int argc, char* argv[]) {
     std::cout << "[Process2] - Terminated" << std::endl; // push
     return 0;
 }
+
