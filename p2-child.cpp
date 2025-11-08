@@ -1,3 +1,8 @@
+/**
+* @author Justin Kim
+* @author Dorian Bansoodeb
+*/
+
 #include <iostream>
 #include <unistd.h>
 
@@ -12,3 +17,4 @@ int main() {
         sleep(1);
     }
 }
+
