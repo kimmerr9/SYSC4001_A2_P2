@@ -1,3 +1,8 @@
+/**
+* @author Justin Kim
+* @author Dorian Bansoodeb
+*/
+
 #include <iostream>
 #include <unistd.h>
 #include <sys/wait.h> 
@@ -28,4 +33,5 @@ int main() {
         std::cout << "[Process1] - Terminated" << std::endl;
         return 0;
     }
+
 }
