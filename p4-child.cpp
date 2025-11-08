@@ -12,8 +12,7 @@ int main(int argc, char* argv[]) {
     int shmID = std::atoi(argv[1]);             
     void* addr = shmat(shmID, nullptr, 0);      
     if (addr == (void*)-1) { 
-        std::cout << "error when re-attaching child to the shared memory space" << std::endl; 
-        return 1; 
+        perror("Error in shmmat()");
     }
     Shared4* shm = static_cast<Shared4*>(addr);
 
@@ -35,8 +34,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (shmdt(addr) < 0) {
-        std::cout << "error when deattaching child to shared memory space" << std::endl;
-        return 1;
+        perror("error when detaching child to shared memory segment");
     }
     std::cout << "[Process2] - Terminated" << std::endl;
     return 0;
