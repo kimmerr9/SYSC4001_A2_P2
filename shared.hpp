@@ -1,3 +1,8 @@
+/**
+* @author Justin Kim
+* @author Dorian Bansoodeb
+*/
+
 #ifndef SHARED_HPP
 #define SHARED_HPP
 
@@ -16,4 +21,5 @@ union semun {
     struct semid_ds* buf;
     unsigned short* array;
 };
+
 #endif
