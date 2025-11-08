@@ -2,7 +2,6 @@
 #include <unistd.h>
 
 int main(int argc, char* argv[]) {
-    std::cout << "I AM IN CHILD PROCESS" << std::endl;
     int count = 0;
     int cycles = 0;
     while(1) {
@@ -17,5 +16,6 @@ int main(int argc, char* argv[]) {
             break;
         }
     }
+    std::cout << "[Process2] - Terminated" << std::endl; // push
     return 0;
 }
